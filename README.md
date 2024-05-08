@@ -59,15 +59,7 @@ This project implements Huffman coding, a popular algorithm for lossless data co
 - `sample.txt`: Sample input text file for testing compression and decompression.
 - `README.md`: Instructions and information about the project.
 
-## Authors
-
-- [Your Name](https://github.com/your-username)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Acknowledgments
 
 - Inspired by [Huffman Coding](https://en.wikipedia.org/wiki/Huffman_coding)
-- Special thanks to OpenAI's ChatGPT for assistance in creating this README.
+- Special thanks to Nigarish Naveed and Hijab Fatima for working with me on this project.
