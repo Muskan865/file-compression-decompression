@@ -12,21 +12,41 @@ jobs:
       image: python:3.11
 
     steps:
+      # 1. Checkout code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Install Semgrep
-      - name: Install Semgrep
-        run: pip install semgrep
+      # 2. Install tools
+      - name: Install dependencies
+        run: |
+          pip install semgrep pip-audit
 
-      # Run SAST
+      # 3. Install Trivy
+      - name: Install Trivy
+        run: |
+          apt-get update
+          apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.0_Linux-64bit.deb
+          dpkg -i trivy_0.50.0_Linux-64bit.deb
+
+      # 4. Run Semgrep (SAST)
       - name: Run Semgrep SAST
-        run: semgrep --config .semgrep/rules --error .
+        run: semgrep scan --config auto --error --json -o semgrep-report.json .
 
-      # Install pip-audit
-      - name: Install pip-audit
-        run: pip install pip-audit
-
-      # Run SCA
+      # 5. Run pip-audit (dependency scan)
       - name: Run pip-audit
-        run: pip-audit
+        run: pip-audit -f json -o pip-audit-report.json
+
+      # 6. Run Trivy (filesystem scan)
+      - name: Run Trivy FS Scan
+        run: trivy fs . -f json -o trivy-report.json
+
+      # 7. Upload security reports
+      - name: Upload Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            semgrep-report.json
+            pip-audit-report.json
+            trivy-report.json
