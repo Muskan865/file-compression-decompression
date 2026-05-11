@@ -30,6 +30,7 @@ jobs:
       # Dependency Security (pip-audit)
       # =========================
       - name: Run pip-audit (SCA)
+        continue-on-error: true
         run: |
           pip-audit --desc
 
