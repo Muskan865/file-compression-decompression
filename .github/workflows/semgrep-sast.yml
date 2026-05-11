@@ -12,16 +12,15 @@ jobs:
       image: python:3.11
 
     steps:
-      # 1. Checkout code
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2. Install tools
+      # Install tools
       - name: Install dependencies
         run: |
           pip install semgrep pip-audit
 
-      # 3. Install Trivy
+      # Install Trivy
       - name: Install Trivy
         run: |
           apt-get update
@@ -29,24 +28,25 @@ jobs:
           wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.50.0_Linux-64bit.deb
           dpkg -i trivy_0.50.0_Linux-64bit.deb
 
-      # 4. Run Semgrep (SAST)
-      - name: Run Semgrep SAST
-        run: semgrep scan --config auto --error --json -o semgrep-report.json .
+      # =========================
+      # SAST (Semgrep)
+      # =========================
+      - name: Run Semgrep (SAST)
+        run: |
+          semgrep scan --config auto --severity ERROR --error .
 
-      # 5. Run pip-audit (dependency scan)
-      - name: Run pip-audit
-        run: pip-audit -f json -o pip-audit-report.json
+      # =========================
+      # Dependency Security (pip-audit)
+      # =========================
+      - name: Run pip-audit (SCA)
+        run: |
+          pip-audit --desc --fail-on high
 
-      # 6. Run Trivy (filesystem scan)
+      # =========================
+      # Infrastructure / File Scan (Trivy)
+      # =========================
       - name: Run Trivy FS Scan
-        run: trivy fs . -f json -o trivy-report.json
-
-      # 7. Upload security reports
-      - name: Upload Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: security-reports
-          path: |
-            semgrep-report.json
-            pip-audit-report.json
-            trivy-report.json
+        run: |
+          trivy fs . \
+            --severity HIGH,CRITICAL \
+            --exit-code 1
