@@ -1,19 +1,32 @@
-name: Semgrep SAST
+name: Security Pipeline
 
 on:
   push:
   pull_request:
 
 jobs:
-  semgrep:
+  security:
     runs-on: ubuntu-latest
 
     container:
-      image: semgrep/semgrep
+      image: python:3.11
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Run Semgrep Scan
+      # Install Semgrep
+      - name: Install Semgrep
+        run: pip install semgrep
+
+      # Run SAST
+      - name: Run Semgrep SAST
         run: semgrep --config .semgrep/rules --error .
+
+      # Install pip-audit
+      - name: Install pip-audit
+        run: pip install pip-audit
+
+      # Run SCA
+      - name: Run pip-audit
+        run: pip-audit
