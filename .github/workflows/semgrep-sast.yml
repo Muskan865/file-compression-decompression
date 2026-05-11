@@ -15,17 +15,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Install tools
       - name: Install dependencies
         run: |
           pip install semgrep pip-audit
-
-      # Install Trivy
-      - name: Install Trivy
-        run: |
-          apt-get update
-          apt-get install -y curl
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
       # =========================
       # SAST (Semgrep)
@@ -39,11 +31,17 @@ jobs:
       # =========================
       - name: Run pip-audit (SCA)
         run: |
-          pip-audit --desc --fail-on high
+          pip-audit --desc
 
       # =========================
       # Infrastructure / File Scan (Trivy)
       # =========================
+      - name: Install Trivy
+        run: |
+          apt-get update
+          apt-get install -y curl
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+
       - name: Run Trivy FS Scan
         run: |
           trivy fs . \
