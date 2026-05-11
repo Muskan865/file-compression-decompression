@@ -1,0 +1,8 @@
+rules:
+  - id: dangerous-os-system
+    patterns:
+      - pattern: os.system($X)
+    message: Dangerous os.system usage detected
+    languages:
+      - python
+    severity: ERROR

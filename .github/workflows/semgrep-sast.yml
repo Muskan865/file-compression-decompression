@@ -16,4 +16,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Semgrep Scan
-        run: semgrep --config p/security-audit --verbose .
+        run: semgrep --config .semgrep/rules .
